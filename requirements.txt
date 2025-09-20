@@ -1,0 +1,13 @@
+streamlit
+pandas
+numpy
+PyMuPDF
+python-docx
+docx2txt
+nltk
+flask
+werkzeug
+scikit-learn
+requests
+pillow
+sentence-transformers
