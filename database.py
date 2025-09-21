@@ -157,6 +157,14 @@ class DatabaseManager:
         conn.close()
         
         return dict(result) if result else None
+
+    def get_job_description(self, jd_id: int) -> Optional[Dict]:
+        """Get a job description by ID - alias for get_job_description_by_id"""
+        return self.get_job_description_by_id(jd_id)
+
+    def get_jd_list(self) -> List[Dict]:
+        """Get list of all job descriptions - alias for get_job_descriptions"""
+        return self.get_job_descriptions()
     
     def get_job_description_by_filename(self, filename: str) -> Optional[Dict]:
         """Get a job description by filename"""
@@ -252,6 +260,14 @@ class DatabaseManager:
         conn.close()
         
         return dict(result) if result else None
+
+    def get_resume(self, resume_id: int) -> Optional[Dict]:
+        """Get a resume by ID - alias for get_resume_by_id"""
+        return self.get_resume_by_id(resume_id)
+
+    def get_resume_list(self) -> List[Dict]:
+        """Get list of all resumes - alias for get_resumes"""
+        return self.get_resumes()
     
     def get_resume_by_filename(self, filename: str) -> Optional[Dict]:
         """Get a resume by filename"""
@@ -307,7 +323,19 @@ class DatabaseManager:
         conn.commit()
         conn.close()
         return analysis_id
-    
+
+    def save_analysis_result(self, resume_id: int, jd_id: int, analysis_data: Dict) -> int:
+        """Save analysis result - wrapper for insert_analysis_result"""
+        return self.insert_analysis_result(
+            resume_id=resume_id,
+            job_description_id=jd_id,
+            relevance_score=analysis_data.get('relevance_score', 0.0),
+            verdict=analysis_data.get('verdict', 'Unknown'),
+            missing_keywords=analysis_data.get('missing_keywords', []),
+            technical_skills=analysis_data.get('technical_skills', {}),
+            soft_skills=analysis_data.get('soft_skills', {})
+        )
+
     def get_analysis_results(self, resume_id: int = None, 
                            job_description_id: int = None) -> List[Dict]:
         """Get analysis results with optional filtering"""
@@ -346,7 +374,11 @@ class DatabaseManager:
         
         conn.close()
         return results
-    
+
+    def get_analysis_history(self) -> List[Dict]:
+        """Get analysis history - alias for get_analysis_results"""
+        return self.get_analysis_results()
+
     # Statistics and Analytics
     def get_dashboard_stats(self) -> Dict:
         """Get dashboard statistics"""
@@ -512,3 +544,15 @@ class DatabaseManager:
         results = [dict(row) for row in cursor.fetchall()]
         conn.close()
         return results
+    
+    def save_job_description(self, filename: str, content: str, file_type: str = None, 
+                           company: str = "Unknown", role: str = "Unknown", 
+                           location: str = "Unknown") -> int:
+        """Save job description - alias for insert_job_description"""
+        return self.insert_job_description(filename, company, role, location, content)
+
+    def save_resume(self, filename: str, content: str, file_type: str = None,
+                   candidate_name: str = "Unknown", email: str = None, 
+                   job_role: str = "Unknown", phone: str = None) -> int:
+        """Save resume - alias for insert_resume"""
+        return self.insert_resume(filename, candidate_name, email, job_role, phone, content)

@@ -105,7 +105,7 @@ class StandaloneAPI:
         except Exception as e:
             return {"error": f"Error uploading resume: {str(e)}"}
     
-    def upload_jd(self, file) -> Dict[str, Any]:
+    def upload_jd(self, file, company="Unknown", role="Unknown", location="Unknown") -> Dict[str, Any]:
         """Process job description upload"""
         try:
             # Extract text from file
@@ -118,7 +118,10 @@ class StandaloneAPI:
             jd_id = self.db.save_job_description(
                 filename=file.name,
                 content=text_content,
-                file_type=file.type
+                file_type=file.type,
+                company=company,
+                role=role,
+                location=location
             )
             
             # Save file to uploads directory
@@ -206,10 +209,10 @@ def upload_resume(file):
     api = get_api()
     return api.upload_resume(file)
 
-def upload_jd(file):
+def upload_jd(file, company="Unknown", role="Unknown", location="Unknown"):
     """Upload a job description file"""
     api = get_api()
-    return api.upload_jd(file)
+    return api.upload_jd(file, company, role, location)
 
 def analyze_resume_jd(resume_id, jd_id):
     """Analyze resume against job description"""

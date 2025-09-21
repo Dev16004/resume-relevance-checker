@@ -26,8 +26,8 @@ if not os.path.exists("uploads/job_descriptions"):
 def save_jd_api(uploaded_file, company_name, role_title, location):
     """Upload job description using the new standalone API"""
     try:
-        # Upload the job description using the API
-        result = upload_jd(uploaded_file)
+        # Upload the job description using the API with form data
+        result = upload_jd(uploaded_file, company_name, role_title, location)
         
         if "error" in result:
             st.error(f"Error uploading job description: {result['error']}")
