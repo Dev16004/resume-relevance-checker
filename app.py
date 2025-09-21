@@ -102,6 +102,22 @@ if backend_status:
     try:
         api_connector.check_backend_health()
         st.success("✅ Backend initialized successfully in standalone mode!")
+        
+        # Initialize demo data for deployment if database is empty
+        try:
+            from database import DatabaseManager
+            db = DatabaseManager()
+            existing_results = db.get_analysis_results()
+            
+            if not existing_results:
+                # Import and run demo data initialization
+                from init_demo_data import init_demo_data
+                if init_demo_data():
+                    st.info("🎯 Demo data initialized for showcase!")
+        except Exception as demo_error:
+            # Don't fail the app if demo data initialization fails
+            st.warning(f"⚠️ Demo data initialization skipped: {str(demo_error)}")
+            
     except Exception as e:
         st.error(f"❌ Backend initialization failed: {str(e)}")
         backend_status = False
