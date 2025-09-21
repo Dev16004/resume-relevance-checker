@@ -146,8 +146,10 @@ def analyze_resume(resume_text, jd_text, resume_id=None, jd_id=None):
     )
     
     # Ensure backward compatibility with existing API
+    relevance_score = analysis_result.get("relevance", 0)
     return {
-        "relevance": analysis_result.get("relevance", 0),
+        "relevance": relevance_score,  # For backward compatibility
+        "relevance_score": relevance_score,  # For database compatibility
         "verdict": analysis_result.get("verdict", "Low"),
         "missing_keywords": analysis_result.get("missing_keywords", []),
         "technical_skills": analysis_result.get("technical_skills", {}),
@@ -411,7 +413,7 @@ def analyze():
             analysis_id = db.insert_analysis_result(
                 resume_id=resume_id,
                 job_description_id=jd_id,
-                relevance_score=analysis_result['relevance'],
+                relevance_score=analysis_result['relevance_score'],
                 verdict=analysis_result['verdict'],
                 missing_keywords=analysis_result['missing_keywords'],
                 technical_skills=analysis_result['technical_skills'],

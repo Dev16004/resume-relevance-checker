@@ -72,7 +72,7 @@ class StandaloneAPI:
             st.error(f"Error extracting text: {str(e)}")
             return ""
     
-    def upload_resume(self, file) -> Dict[str, Any]:
+    def upload_resume(self, file, candidate_name: str = "Unknown", email: str = None, job_role: str = "Unknown", phone: str = None) -> Dict[str, Any]:
         """Process resume upload"""
         try:
             # Extract text from file
@@ -85,7 +85,11 @@ class StandaloneAPI:
             resume_id = self.db.save_resume(
                 filename=file.name,
                 content=text_content,
-                file_type=file.type
+                file_type=file.type,
+                candidate_name=candidate_name,
+                email=email,
+                job_role=job_role,
+                phone=phone
             )
             
             # Save file to uploads directory
@@ -204,10 +208,10 @@ def get_api():
     return _api_instance
 
 # Backward compatibility functions
-def upload_resume(file):
+def upload_resume(file, candidate_name: str = "Unknown", email: str = None, job_role: str = "Unknown", phone: str = None):
     """Upload a resume file"""
     api = get_api()
-    return api.upload_resume(file)
+    return api.upload_resume(file, candidate_name, email, job_role, phone)
 
 def upload_jd(file, company="Unknown", role="Unknown", location="Unknown"):
     """Upload a job description file"""

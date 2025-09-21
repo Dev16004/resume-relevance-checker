@@ -185,6 +185,23 @@ class SemanticSearchService:
         Extract missing keywords using semantic similarity approach
         """
         try:
+            # Calculate overall similarity to determine dynamic threshold
+            overall_similarity = self.embedding_service.calculate_similarity(
+                resume_embedding, jd_embedding
+            )
+            
+            # Dynamic threshold based on overall similarity
+            # If overall similarity is high, use higher threshold to find subtle gaps
+            # If overall similarity is low, use lower threshold to find major gaps
+            if overall_similarity > 0.8:
+                threshold = 0.75  # Very high bar for excellent matches
+            elif overall_similarity > 0.6:
+                threshold = 0.65  # High bar for good matches
+            elif overall_similarity > 0.4:
+                threshold = 0.55  # Medium bar for average matches
+            else:
+                threshold = 0.4   # Lower bar for poor matches
+            
             # Split JD into sentences/phrases
             jd_sentences = [s.strip() for s in jd_text.split('.') if len(s.strip()) > 10]
             
@@ -199,15 +216,18 @@ class SemanticSearchService:
                     sentence_embedding, resume_embedding
                 )
                 
-                # If similarity is low, this might be a missing concept
-                if similarity < 0.3:  # Threshold for missing concepts
+                # If similarity is below dynamic threshold, this might be a missing concept
+                if similarity < threshold:
                     # Extract key terms from the sentence
                     words = sentence.lower().split()
-                    key_words = [w for w in words if len(w) > 3 and w.isalpha()]
-                    missing_concepts.extend(key_words[:3])  # Take top 3 words
+                    # Filter for meaningful words (skills, technologies, etc.)
+                    key_words = [w for w in words if len(w) > 3 and w.isalpha() 
+                               and w not in ['experience', 'years', 'work', 'team', 'company', 'role']]
+                    missing_concepts.extend(key_words[:2])  # Take top 2 words per sentence
             
             # Remove duplicates and return
-            return list(set(missing_concepts))[:10]
+            unique_concepts = list(set(missing_concepts))
+            return unique_concepts[:8]  # Limit to 8 most important missing concepts
             
         except Exception as e:
             logger.error(f"Error extracting semantic keywords: {e}")
@@ -260,12 +280,12 @@ class SemanticSearchService:
     def _fallback_analysis(self, resume_text: str, jd_text: str) -> Dict[str, Any]:
         """Fallback analysis in case of errors"""
         return {
-            "relevance": 50.0,
-            "verdict": "Medium",
+            "relevance": 0.0,
+            "verdict": "Low",
             "missing_keywords": [],
             "technical_skills": {},
             "soft_skills": {},
-            "similarity_score": 0.5,
+            "similarity_score": 0.0,
             "analysis_method": "fallback"
         }
     

@@ -26,8 +26,13 @@ if not os.path.exists("uploads/resumes"):
 def save_resume_api(uploaded_file, candidate_name, email, job_role):
     """Upload resume using the new standalone API"""
     try:
-        # Upload the resume using the API
-        result = upload_resume(uploaded_file)
+        # Upload the resume using the API with all required parameters
+        result = upload_resume(
+            file=uploaded_file,
+            candidate_name=candidate_name,
+            email=email,
+            job_role=job_role
+        )
         
         if "error" in result:
             st.error(f"Error uploading resume: {result['error']}")
