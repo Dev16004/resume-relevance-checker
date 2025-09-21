@@ -15,13 +15,12 @@ A comprehensive AI-powered resume analysis tool that evaluates resume-job descri
 
 ## 🛠️ Technology Stack
 
-- **Frontend**: Streamlit
-- **Backend**: Flask
-- **AI/ML**: Sentence Transformers, NLTK
-- **Vector Database**: ChromaDB
+- **Frontend & Backend**: Streamlit (Integrated)
+- **AI/ML**: Sentence Transformers, NLTK, scikit-learn
+- **Vector Database**: ChromaDB (with fallback)
 - **Database**: SQLite
 - **Document Processing**: PyMuPDF, python-docx, docx2txt
-- **Deployment**: Streamlit Cloud compatible
+- **Deployment**: Streamlit Cloud ready
 
 ## 📋 Prerequisites
 
@@ -77,26 +76,48 @@ A comprehensive AI-powered resume analysis tool that evaluates resume-job descri
 
 ## 🌐 Deployment
 
-### Streamlit Cloud Deployment
+### Streamlit Cloud Deployment (Recommended)
 
-1. **Push to GitHub**
+1. **Ensure your code is on GitHub**
    ```bash
    git add .
-   git commit -m "Initial commit"
+   git commit -m "Ready for deployment"
    git push origin main
    ```
 
 2. **Deploy on Streamlit Cloud**
    - Go to [share.streamlit.io](https://share.streamlit.io)
-   - Connect your GitHub repository
-   - Select `app.py` as the main file
-   - Deploy!
+   - Sign in with GitHub
+   - Click "New app"
+   - Select your repository: `Dev16004/resume-relevance-checker`
+   - Main file path: `app.py`
+   - Click "Deploy!"
+
+3. **Deployment Configuration**
+   - Python version: 3.11.0 (specified in `runtime.txt`)
+   - Dependencies: Automatically installed from `requirements.txt`
+   - Configuration: Uses `.streamlit/config.toml`
+
+### Alternative Deployment Options
+
+#### Heroku
+```bash
+# Install Heroku CLI and login
+heroku create your-app-name
+git push heroku main
+```
+
+#### Railway
+- Connect GitHub repository
+- Select `app.py` as entry point
+- Deploy automatically
 
 ### Environment Variables
 
-For production deployment, set these environment variables:
-- `PYTHONPATH`: Set to project root
-- `NLTK_DATA`: Path to NLTK data directory
+For production deployment, these are automatically handled:
+- NLTK data downloads on first run
+- Streamlit configuration from `.streamlit/config.toml`
+- No additional environment variables required
 
 ## 📁 Project Structure
 
