@@ -196,7 +196,7 @@ class EmbeddingService:
         
         return similarities[:top_k]
     
-    def get_model_info(self) -> dict:
+    def get_model_info(self):
         """Get information about the current model"""
         return {
             "model_key": self.model_key,
@@ -207,6 +207,10 @@ class EmbeddingService:
             "quality": self.model_config["quality"],
             "device": self.device
         }
+    
+    def get_current_model(self):
+        """Get the current model key"""
+        return self.model_key
     
     def switch_model(self, model_key: str):
         """

@@ -93,17 +93,18 @@ if not os.path.exists("uploads/resumes"):
 if not os.path.exists("uploads/job_descriptions"):
     os.makedirs("uploads/job_descriptions")
 
-# Backend server health check and startup
-# Ensures the Flask backend is running before the frontend loads
+# Backend health check (standalone mode)
+# In standalone mode, the backend is integrated directly
 backend_status = api_connector.is_backend_running()
 
-if not backend_status:
-    with st.spinner("🚀 Starting backend server..."):
-        if api_connector.start_backend_server():
-            st.success("✅ Backend server started successfully!")
-            backend_status = True
-        else:
-            st.error("❌ Failed to start backend server. Some features may not work correctly.")
+if backend_status:
+    # Initialize the standalone API to ensure all components are ready
+    try:
+        api_connector.check_backend_health()
+        st.success("✅ Backend initialized successfully in standalone mode!")
+    except Exception as e:
+        st.error(f"❌ Backend initialization failed: {str(e)}")
+        backend_status = False
 
 # Sidebar configuration panel
 with st.sidebar:
@@ -141,10 +142,17 @@ with st.sidebar:
                 label = f"{key.title()} - {config['quality']} Quality, {config['performance']} Speed"
                 model_options[label] = key
             
+            # Find the index of current model, default to 0 if not found
+            current_model_key = current_model.get('model_key', 'fast')
+            try:
+                current_index = list(model_options.values()).index(current_model_key)
+            except ValueError:
+                current_index = 0  # Default to first option if current model not found
+            
             selected_model_label = st.selectbox(
                 "Select Embedding Model:",
                 options=list(model_options.keys()),
-                index=list(model_options.values()).index(current_model.get('model_key', 'fast'))
+                index=current_index
             )
             
             selected_model_key = model_options[selected_model_label]
